@@ -56,6 +56,13 @@ public class JpacrudController {
         return logRecordModel.getCreater()+" : "+logRecordModel.getCreateDate();
     }
 
+    @RequestMapping("/readid/{id}")
+    @ResponseBody
+    public String testReadId(@PathVariable(name = "id") Integer id){
+        LogRecordModel logRecordModel = logRecordService.getDataModel(id);
+        return logRecordModel.getCreater()+" : "+logRecordModel.getCreateDate();
+    }
+
     @RequestMapping("/update")
     @ResponseBody
     public String testUpdate(){
