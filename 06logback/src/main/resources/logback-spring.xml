@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<configuration>
+    <!--引入loback的base預設檔，並改寫-->
+    <include resource="org/springframework/boot/logging/logback/base.xml"/>
+
+    <!-- 文件输出日志 (文件大小策略进行文件输出，超过指定大小对文件备份) -->
+    <appender name="FILE" class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <File>06logback/logs/backend.log</File>
+        <!--檔案自動打包zip-->
+        <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+            <FileNamePattern>06logback/logs/backend-logback-%d{yyyy-MM-dd}.%i.zip</FileNamePattern>
+            <timeBasedFileNamingAndTriggeringPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedFNATP">
+                <!--每個檔案最大10MB-->
+                <maxFileSize>10MB</maxFileSize>
+            </timeBasedFileNamingAndTriggeringPolicy>
+            <!--記錄保存10天-->
+            <maxHistory>10</maxHistory>
+        </rollingPolicy>
+        <encoder class="ch.qos.logback.classic.encoder.PatternLayoutEncoder">
+            <charset>UTF-8</charset>
+            <Pattern>%-5level [%contextName] %d{yyyy-MM-dd HH:mm:ss.SSS} [%thread] %logger.%method - %msg%n</Pattern>
+        </encoder>
+    </appender>
+
+    <appender name="fileErrorLog" class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <!--過濾error的訊息-->
+        <!--是将错误日志记录在文件中，不保存其他级别的日志，需要配置一个 filter 节点。拦截内容如下（注意单词大小写，千万不能出错！）-->
+        <filter class="ch.qos.logback.classic.filter.LevelFilter">
+            <level>ERROR</level>
+            <onMatch>ACCEPT</onMatch>
+            <onMismatch>DENY</onMismatch>
+        </filter>
+        <!--滚动策略-->
+        <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+            <!--输出路径-->
+            <fileNamePattern>06logback/logs/error/error.%d.log</fileNamePattern>
+        </rollingPolicy>
+        <encoder>
+            <charset>UTF-8</charset>
+            <pattern>%-5level [%contextName] %d{yyyy-MM-dd HH:mm:ss.SSS} [%thread] %logger.%method - %msg%n</pattern>
+        </encoder>
+    </appender>
+
+<!--
+    %-5level: 显示 Log 级别，从左显示5个字符宽度，打印内容: TRACE/DEBUG/INFO/WARN/ERROR
+    %d{yyyy-MM-dd HH:mm:ss.SSS}: 显示时间戳，{}中内容代表时间戳格式
+    %thread: 显示线程名字
+    %logger{36}: 表示 logger 名字最长36个字符，否则按照句点分割
+    %msg: 日志消息
+    %n: 换行符
+-->
+
+    <root level="INFO">
+        <appender-ref ref="FILE" />
+        <appender-ref ref="fileErrorLog"/>
+    </root>
+
+    <!--如果想要记录更详细的 SQL 日志，只需要把下面的日志级别改成 TRACE 就可以了-->
+    <!--預設只有info、warn、error，目前到debug層級-->
+    <!--name 需要改成專案controller路徑-->
+    <logger name="com.example.logback.controller" level="DEBUG" />
+
+</configuration>
